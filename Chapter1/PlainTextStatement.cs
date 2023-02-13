@@ -1,4 +1,6 @@
-﻿namespace RefactoringBookExamples;
+﻿using System.Globalization;
+
+namespace RefactoringBookExamples;
 
 public class PlainTextStatement
 {
@@ -15,7 +17,7 @@ public class PlainTextStatement
         foreach (var perf in data.EnrichedPerformances)
         {
             // print line for this order
-            result += $"  {perf.Play.Name}: ${ToUSD(perf.Amount)} ({perf.Audience} seats)\n";
+            result += $"  {perf.Play.Name}: {ToUSD(perf.Amount)} ({perf.Audience} seats)\n";
         }
 
         result += $"Amount owed is {ToUSD(data.TotalAmount)}\n";
@@ -25,6 +27,6 @@ public class PlainTextStatement
     
     private string ToUSD(int thisAmount)
     {
-        return (thisAmount / 100).ToString("C");
+        return (thisAmount / 100).ToString("C", new CultureInfo("en-US"));
     }
 }
