@@ -20,4 +20,6 @@ public class ComedyCalculator : PerformanceCalculator
             return result;
         }
     }
+
+    public override int VolumeCredits => base.VolumeCredits + (int)Math.Floor((decimal)(_performance.Audience / 5));
 }

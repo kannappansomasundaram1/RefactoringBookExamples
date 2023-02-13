@@ -16,7 +16,7 @@ public class StatementDataCreator
             var calculator = PerformanceCalculator.CreatePerformanceCalculator(performance, PlayFor(performance));
             var enrich = new Performance();
             enrich.Audience = performance.Audience;
-            enrich.Play = PlayFor(performance);
+            enrich.Play = calculator.Play;
             enrich.Amount = calculator.Amount;
             enrich.VolumeCredits = calculator.VolumeCredits;
             return enrich;
