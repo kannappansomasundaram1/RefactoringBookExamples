@@ -3,7 +3,11 @@ namespace RefactoringBookExamples;
 
 public class PlaysChargeCalculator
 {
-    public string statement (Invoice invoice, Dictionary<string, Play> plays) {
+    public string statement(Invoice invoice, Dictionary<string, Play> plays)
+    {
+        return renderPlainText(invoice, plays);
+    }
+    private string renderPlainText (Invoice invoice, Dictionary<string, Play> plays) {
         var result = $"Statement for {invoice.Customer}\n";
         foreach (var perf in invoice.Performances)
         {
@@ -18,6 +22,7 @@ public class PlaysChargeCalculator
         {
             return plays[performance.PlayID];
         }
+        
         string ToUSD(int thisAmount)
         {
             return (thisAmount/100).ToString("C");
@@ -85,6 +90,4 @@ public class PlaysChargeCalculator
             return totalAmount;
         }
     }
-
-
 }
