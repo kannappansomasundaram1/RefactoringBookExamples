@@ -17,9 +17,40 @@ public class PlaysChargeCalculator
             return new Performance
             {
                 Play = PlayFor(performance),
-                Audience = performance.Audience
+                Audience = performance.Audience,
+                Amount = amountFor(performance)
             };
         }
+        
+        int amountFor(Performance aPerformance)
+        {
+            int result;
+            switch (aPerformance.Play.Type)
+            {
+                case "tragedy":
+                    result = 40000;
+                    if (aPerformance.Audience > 30)
+                    {
+                        result += 1000 * (aPerformance.Audience - 30);
+                    }
+
+                    break;
+                case "comedy":
+                    result = 30000;
+                    if (aPerformance.Audience > 20)
+                    {
+                        result += 10000 + 500 * (aPerformance.Audience - 20);
+                    }
+
+                    result += 300 * aPerformance.Audience;
+                    break;
+                default:
+                    throw new Exception($"unknown Type: {aPerformance.Play.Type}");
+            }
+
+            return result;
+        }
+
         
         Play PlayFor(Performance performance)
         {
@@ -34,7 +65,7 @@ public class PlaysChargeCalculator
         foreach (var perf in data.Performances)
         {
             // print line for this order
-            result += $"  {perf.Play.Name}: ${ToUSD(amountFor(perf))} ({perf.Audience} seats)\n";
+            result += $"  {perf.Play.Name}: ${ToUSD(perf.Amount)} ({perf.Audience} seats)\n";
         }
         result += $"Amount owed is {ToUSD(GetTotalAmount())}\n";
         result += $"You earned {TotalVolumeCredits()} credits\n";
@@ -45,34 +76,6 @@ public class PlaysChargeCalculator
             return (thisAmount/100).ToString("C");
         }
         
-        int amountFor(Performance aPerformance)
-        {
-            int result;
-            switch (aPerformance.Play.Type)
-            {
-                case "tragedy":
-                result = 40000;
-                if (aPerformance.Audience > 30)
-                {
-                    result += 1000 * (aPerformance.Audience - 30);
-                }
-
-                break;
-                case "comedy":
-                result = 30000;
-                if (aPerformance.Audience > 20)
-                {
-                    result += 10000 + 500 * (aPerformance.Audience - 20);
-                }
-
-                result += 300 * aPerformance.Audience;
-                break;
-                default:
-                throw new Exception($"unknown Type: {aPerformance.Play.Type}");
-            }
-
-            return result;
-        }
         
         int VolumeCreditsFor(Performance aPerformance)
         {
@@ -101,7 +104,7 @@ public class PlaysChargeCalculator
             var totalAmount = 0;
             foreach (var perf in data.Performances)
             {
-                totalAmount += amountFor(perf);
+                totalAmount += perf.Amount;
             }
 
             return totalAmount;
