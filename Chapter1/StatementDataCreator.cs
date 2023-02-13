@@ -4,31 +4,39 @@ public class StatementDataCreator
 {
     public StatementData CreateStatementData(Invoice invoice, Dictionary<string, Play> plays)
     {
-        var statementData = new StatementData();
-        statementData.EnrichedPerformances = invoice.Performances.Select(Enrich).ToList();
-        statementData.Customer = invoice.Customer;
-        statementData.TotalAmount = GetTotalAmount(statementData.EnrichedPerformances);
-        statementData.TotalVolumeCredits = TotalVolumeCredits(statementData.EnrichedPerformances);
-        return statementData;
+        var enrichedPerformances = invoice.Performances
+            .Select(performance => Enrich(performance, PlayFor(performance)))
+            .ToList();
 
-        EnrichedPerformance Enrich(Performance performance)
+        var statementData = new StatementData
         {
-            var calculator = PerformanceCalculator.CreatePerformanceCalculator(performance, PlayFor(performance));
-            var enrich = new EnrichedPerformance();
-            enrich.Audience = performance.Audience;
-            enrich.Play = calculator.Play;
-            enrich.Amount = calculator.Amount;
-            enrich.VolumeCredits = calculator.VolumeCredits;
-            return enrich;
-        }
-
-        int TotalVolumeCredits(IEnumerable<EnrichedPerformance> performances) => performances.Sum(perf => perf.VolumeCredits);
-
-        int GetTotalAmount(IEnumerable<EnrichedPerformance> performances) => performances.Sum(perf => perf.Amount);
+            Customer = invoice.Customer,
+            TotalAmount = GetTotalAmount(enrichedPerformances),
+            TotalVolumeCredits = TotalVolumeCredits(enrichedPerformances),
+            EnrichedPerformances = enrichedPerformances,
+        };
+        return statementData;
 
         Play PlayFor(Performance performance)
         {
             return plays[performance.PlayID];
         }
     }
+
+    EnrichedPerformance Enrich(Performance performance, Play play)
+    {
+        var calculator = PerformanceCalculator.CreatePerformanceCalculator(performance, play);
+        return new EnrichedPerformance
+        {
+            Audience = performance.Audience,
+            Play = calculator.Play,
+            Amount = calculator.Amount,
+            VolumeCredits = calculator.VolumeCredits
+        };
+    }
+
+    int TotalVolumeCredits(IEnumerable<EnrichedPerformance> performances) =>
+        performances.Sum(perf => perf.VolumeCredits);
+
+    int GetTotalAmount(IEnumerable<EnrichedPerformance> performances) => performances.Sum(perf => perf.Amount);
 }
