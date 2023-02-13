@@ -7,13 +7,14 @@ public class PlaysChargeCalculator
     {
         StatementData statementData = new StatementData()
         {
-            Customer = invoice.Customer
+            Customer = invoice.Customer,
+            Performances = invoice.Performances
         };
-        return renderPlainText(statementData, invoice, plays);
+        return renderPlainText(statementData, plays);
     }
-    private string renderPlainText(StatementData data, Invoice invoice, Dictionary<string, Play> plays) {
+    private string renderPlainText(StatementData data, Dictionary<string, Play> plays) {
         var result = $"Statement for {data.Customer}\n";
-        foreach (var perf in invoice.Performances)
+        foreach (var perf in data.Performances)
         {
             // print line for this order
             result += $"  {PlayFor(perf).Name}: ${ToUSD(amountFor(perf))} ({perf.Audience} seats)\n";
@@ -74,7 +75,7 @@ public class PlaysChargeCalculator
         int TotalVolumeCredits()
         {
             var volumeCredits = 0;
-            foreach (var perf in invoice.Performances)
+            foreach (var perf in data.Performances)
             {
                 // add volume credits
                 volumeCredits += VolumeCreditsFor(perf);
@@ -86,7 +87,7 @@ public class PlaysChargeCalculator
         int GetTotalAmount()
         {
             var totalAmount = 0;
-            foreach (var perf in invoice.Performances)
+            foreach (var perf in data.Performances)
             {
                 totalAmount += amountFor(perf);
             }
@@ -99,4 +100,5 @@ public class PlaysChargeCalculator
 public class StatementData
 {
     public string Customer { get; set; }
+    public IEnumerable<Performance> Performances { get; set; }
 }
