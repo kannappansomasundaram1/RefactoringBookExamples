@@ -5,11 +5,14 @@ public class PlaysChargeCalculator
 {
     public string statement(Invoice invoice, Dictionary<string, Play> plays)
     {
-        StatementData statementData = new StatementData();
+        StatementData statementData = new StatementData()
+        {
+            Customer = invoice.Customer
+        };
         return renderPlainText(statementData, invoice, plays);
     }
     private string renderPlainText(StatementData data, Invoice invoice, Dictionary<string, Play> plays) {
-        var result = $"Statement for {invoice.Customer}\n";
+        var result = $"Statement for {data.Customer}\n";
         foreach (var perf in invoice.Performances)
         {
             // print line for this order
@@ -95,4 +98,5 @@ public class PlaysChargeCalculator
 
 public class StatementData
 {
+    public string Customer { get; set; }
 }
