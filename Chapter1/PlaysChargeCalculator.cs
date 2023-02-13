@@ -23,28 +23,10 @@ public class PlaysChargeCalculator
             return enrich;
         }
         
-        int TotalVolumeCredits(StatementData data)
-        {
-            var volumeCredits = 0;
-            foreach (var perf in data.Performances)
-            {
-                // add volume credits
-                volumeCredits += perf.VolumeCredits;
-            }
+        int TotalVolumeCredits(StatementData data) => data.Performances.Sum(perf => perf.VolumeCredits);
 
-            return volumeCredits;
-        }
+        int GetTotalAmount(StatementData data) => data.Performances.Sum(perf => perf.Amount);
 
-        int GetTotalAmount(StatementData data)
-        {
-            var totalAmount = 0;
-            foreach (var perf in data.Performances)
-            {
-                totalAmount += perf.Amount;
-            }
-
-            return totalAmount;
-        }
         int VolumeCreditsFor(Performance aPerformance)
         {
             int result;
