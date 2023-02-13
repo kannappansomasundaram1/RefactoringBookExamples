@@ -2,12 +2,12 @@ using RefactoringBookExamples;
 
 namespace Chapter1Tests;
 
-public class PlaysChargeCalculatorTests
+public class PlainTextStatementTest
 {
     [Fact]
     public void Returns_Statement()
     {
-        var sut = new PlaysChargeCalculator();
+        var sut = new PlainTextStatement();
 
         var result = sut.statement(new Invoice
         {

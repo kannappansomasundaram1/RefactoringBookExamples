@@ -1,18 +1,16 @@
-﻿
-namespace RefactoringBookExamples;
+﻿namespace RefactoringBookExamples;
 
-public class PlaysChargeCalculator
+public class StatementDataCreator
 {
-    public string statement(Invoice invoice, Dictionary<string, Play> plays)
+    public StatementData CreateStatementData(Invoice invoice, Dictionary<string, Play> plays)
     {
-        StatementData statementData = new StatementData();
+        var statementData = new StatementData();
         statementData.Performances = invoice.Performances.Select(Enrich).ToList();
         statementData.Customer = invoice.Customer;
         statementData.TotalAmount = GetTotalAmount(statementData);
         statementData.TotalVolumeCredits = TotalVolumeCredits(statementData);
+        return statementData;
 
-        return renderPlainText(statementData);
-        
         Performance Enrich(Performance performance)
         {
             var enrich = new Performance();
@@ -22,7 +20,7 @@ public class PlaysChargeCalculator
             enrich.VolumeCredits = VolumeCreditsFor(enrich);
             return enrich;
         }
-        
+
         int TotalVolumeCredits(StatementData data) => data.Performances.Sum(perf => perf.VolumeCredits);
 
         int GetTotalAmount(StatementData data) => data.Performances.Sum(perf => perf.Amount);
@@ -36,7 +34,7 @@ public class PlaysChargeCalculator
                 result += (int)Math.Floor((decimal)(aPerformance.Audience / 5));
             return result;
         }
-        
+
         int amountFor(Performance aPerformance)
         {
             int result;
@@ -66,37 +64,10 @@ public class PlaysChargeCalculator
             return result;
         }
 
-        
+
         Play PlayFor(Performance performance)
         {
             return plays[performance.PlayID];
         }
     }
-
-    
-
-    private string renderPlainText(StatementData data) {
-        var result = $"Statement for {data.Customer}\n";
-        foreach (var perf in data.Performances)
-        {
-            // print line for this order
-            result += $"  {perf.Play.Name}: ${ToUSD(perf.Amount)} ({perf.Audience} seats)\n";
-        }
-        result += $"Amount owed is {ToUSD(data.TotalAmount)}\n";
-        result += $"You earned {data.TotalVolumeCredits} credits\n";
-        return result;
-
-        string ToUSD(int thisAmount)
-        {
-            return (thisAmount/100).ToString("C");
-        }
-    }
-}
-
-public class StatementData
-{
-    public string Customer { get; set; }
-    public IEnumerable<Performance> Performances { get; set; }
-    public int TotalAmount { get; set; }
-    public int TotalVolumeCredits { get; set; }
 }
