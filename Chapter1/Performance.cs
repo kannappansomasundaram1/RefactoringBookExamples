@@ -1,7 +1,8 @@
 ﻿namespace RefactoringBookExamples;
 
-public class Performance
+public record Performance
 {
     public string PlayID { get; set; }
+    public Play Play { get; set; }
     public int Audience { get; set; }
 }

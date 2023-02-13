@@ -8,26 +8,38 @@ public class PlaysChargeCalculator
         StatementData statementData = new StatementData()
         {
             Customer = invoice.Customer,
-            Performances = invoice.Performances
+            Performances = invoice.Performances.Select(Enrich).ToList()
         };
         return renderPlainText(statementData, plays);
-    }
-    private string renderPlainText(StatementData data, Dictionary<string, Play> plays) {
-        var result = $"Statement for {data.Customer}\n";
-        foreach (var perf in data.Performances)
+        
+        Performance Enrich(Performance performance)
         {
-            // print line for this order
-            result += $"  {PlayFor(perf).Name}: ${ToUSD(amountFor(perf))} ({perf.Audience} seats)\n";
+            return new Performance
+            {
+                Play = PlayFor(performance),
+                Audience = performance.Audience
+            };
         }
-        result += $"Amount owed is {ToUSD(GetTotalAmount())}\n";
-        result += $"You earned {TotalVolumeCredits()} credits\n";
-        return result;
         
         Play PlayFor(Performance performance)
         {
             return plays[performance.PlayID];
         }
-        
+    }
+
+    
+
+    private string renderPlainText(StatementData data, Dictionary<string, Play> plays) {
+        var result = $"Statement for {data.Customer}\n";
+        foreach (var perf in data.Performances)
+        {
+            // print line for this order
+            result += $"  {perf.Play.Name}: ${ToUSD(amountFor(perf))} ({perf.Audience} seats)\n";
+        }
+        result += $"Amount owed is {ToUSD(GetTotalAmount())}\n";
+        result += $"You earned {TotalVolumeCredits()} credits\n";
+        return result;
+
         string ToUSD(int thisAmount)
         {
             return (thisAmount/100).ToString("C");
@@ -36,7 +48,7 @@ public class PlaysChargeCalculator
         int amountFor(Performance aPerformance)
         {
             int result;
-            switch (PlayFor(aPerformance).Type)
+            switch (aPerformance.Play.Type)
             {
                 case "tragedy":
                 result = 40000;
@@ -56,7 +68,7 @@ public class PlaysChargeCalculator
                 result += 300 * aPerformance.Audience;
                 break;
                 default:
-                throw new Exception($"unknown Type: {PlayFor(aPerformance).Type}");
+                throw new Exception($"unknown Type: {aPerformance.Play.Type}");
             }
 
             return result;
@@ -67,7 +79,7 @@ public class PlaysChargeCalculator
             int result;
             result = Math.Max(aPerformance.Audience - 30, 0);
             // add extra credit for every ten comedy attendees
-            if ("comedy" == PlayFor(aPerformance).Type)
+            if ("comedy" == aPerformance.Play.Type)
                 result += (int)Math.Floor((decimal)(aPerformance.Audience / 5));
             return result;
         }
