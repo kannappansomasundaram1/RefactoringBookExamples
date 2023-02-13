@@ -15,7 +15,6 @@ public class TragedyCalculator : PerformanceCalculator
             {
                 result += 1000 * (_performance.Audience - 30);
             }
-
             return result;
         }
     }

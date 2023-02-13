@@ -27,7 +27,6 @@ public abstract class PerformanceCalculator
         get
         {
             var result = Math.Max(_performance.Audience - 30, 0);
-           
             return result;
         }
     }
