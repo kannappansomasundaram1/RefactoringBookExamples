@@ -5,9 +5,10 @@ public class PlaysChargeCalculator
 {
     public string statement(Invoice invoice, Dictionary<string, Play> plays)
     {
-        return renderPlainText(invoice, plays);
+        StatementData statementData = new StatementData();
+        return renderPlainText(statementData, invoice, plays);
     }
-    private string renderPlainText (Invoice invoice, Dictionary<string, Play> plays) {
+    private string renderPlainText(StatementData data, Invoice invoice, Dictionary<string, Play> plays) {
         var result = $"Statement for {invoice.Customer}\n";
         foreach (var perf in invoice.Performances)
         {
@@ -90,4 +91,8 @@ public class PlaysChargeCalculator
             return totalAmount;
         }
     }
+}
+
+public class StatementData
+{
 }
