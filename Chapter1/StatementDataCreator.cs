@@ -13,61 +13,78 @@ public class StatementDataCreator
 
         Performance Enrich(Performance performance)
         {
+            var calculator = new PerformanceCalculator(performance, PlayFor(performance));
             var enrich = new Performance();
             enrich.Audience = performance.Audience;
             enrich.Play = PlayFor(performance);
-            enrich.Amount = amountFor(enrich);
-            enrich.VolumeCredits = VolumeCreditsFor(enrich);
+            enrich.Amount = calculator.Amount;
+            enrich.VolumeCredits = calculator.VolumeCredits;
             return enrich;
         }
 
         int TotalVolumeCredits(StatementData data) => data.Performances.Sum(perf => perf.VolumeCredits);
 
         int GetTotalAmount(StatementData data) => data.Performances.Sum(perf => perf.Amount);
-
-        int VolumeCreditsFor(Performance aPerformance)
+        
+        Play PlayFor(Performance performance)
         {
-            int result;
-            result = Math.Max(aPerformance.Audience - 30, 0);
-            // add extra credit for every ten comedy attendees
-            if ("comedy" == aPerformance.Play.Type)
-                result += (int)Math.Floor((decimal)(aPerformance.Audience / 5));
-            return result;
+            return plays[performance.PlayID];
         }
+    }
+}
 
-        int amountFor(Performance aPerformance)
+public class PerformanceCalculator
+{
+    private readonly Performance _performance;
+    private readonly Play _playFor;
+
+    public PerformanceCalculator(Performance performance, Play playFor)
+    {
+        _performance = performance;
+        _playFor = playFor;
+    }
+
+    public int Amount
+    {
+        get
         {
             int result;
-            switch (aPerformance.Play.Type)
+            switch (_performance.Play.Type)
             {
                 case "tragedy":
                     result = 40000;
-                    if (aPerformance.Audience > 30)
+                    if (_performance.Audience > 30)
                     {
-                        result += 1000 * (aPerformance.Audience - 30);
+                        result += 1000 * (_performance.Audience - 30);
                     }
 
                     break;
                 case "comedy":
                     result = 30000;
-                    if (aPerformance.Audience > 20)
+                    if (_performance.Audience > 20)
                     {
-                        result += 10000 + 500 * (aPerformance.Audience - 20);
+                        result += 10000 + 500 * (_performance.Audience - 20);
                     }
 
-                    result += 300 * aPerformance.Audience;
+                    result += 300 * _performance.Audience;
                     break;
                 default:
-                    throw new Exception($"unknown Type: {aPerformance.Play.Type}");
+                    throw new Exception($"unknown Type: {_performance.Play.Type}");
             }
 
             return result;
         }
+    }
 
-
-        Play PlayFor(Performance performance)
+    public int VolumeCredits
+    {
+        get
         {
-            return plays[performance.PlayID];
+            var result = Math.Max(_performance.Audience - 30, 0);
+            // add extra credit for every ten comedy attendees
+            if ("comedy" == _performance.Play.Type)
+                result += (int)Math.Floor((decimal)(_performance.Audience / 5));
+            return result;
         }
     }
 }
