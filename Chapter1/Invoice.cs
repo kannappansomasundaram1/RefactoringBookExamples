@@ -2,6 +2,6 @@
 
 public class Invoice
 {
-    public IEnumerable<Performance> Performances { get; init; }
-    public string Customer { get; init; }
+    public IEnumerable<Performance> Performances { get; set; }
+    public string Customer { get; set; }
 }
