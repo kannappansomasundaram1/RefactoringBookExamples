@@ -12,7 +12,7 @@ public class PlainTextStatement
     private string renderPlainText(StatementData data)
     {
         var result = $"Statement for {data.Customer}\n";
-        foreach (var perf in data.Performances)
+        foreach (var perf in data.EnrichedPerformances)
         {
             // print line for this order
             result += $"  {perf.Play.Name}: ${ToUSD(perf.Amount)} ({perf.Audience} seats)\n";

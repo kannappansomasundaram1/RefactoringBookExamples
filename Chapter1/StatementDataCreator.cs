@@ -5,16 +5,16 @@ public class StatementDataCreator
     public StatementData CreateStatementData(Invoice invoice, Dictionary<string, Play> plays)
     {
         var statementData = new StatementData();
-        statementData.Performances = invoice.Performances.Select(Enrich).ToList();
+        statementData.EnrichedPerformances = invoice.Performances.Select(Enrich).ToList();
         statementData.Customer = invoice.Customer;
-        statementData.TotalAmount = GetTotalAmount(statementData);
-        statementData.TotalVolumeCredits = TotalVolumeCredits(statementData);
+        statementData.TotalAmount = GetTotalAmount(statementData.EnrichedPerformances);
+        statementData.TotalVolumeCredits = TotalVolumeCredits(statementData.EnrichedPerformances);
         return statementData;
 
-        Performance Enrich(Performance performance)
+        EnrichedPerformance Enrich(Performance performance)
         {
             var calculator = PerformanceCalculator.CreatePerformanceCalculator(performance, PlayFor(performance));
-            var enrich = new Performance();
+            var enrich = new EnrichedPerformance();
             enrich.Audience = performance.Audience;
             enrich.Play = calculator.Play;
             enrich.Amount = calculator.Amount;
@@ -22,9 +22,9 @@ public class StatementDataCreator
             return enrich;
         }
 
-        int TotalVolumeCredits(StatementData data) => data.Performances.Sum(perf => perf.VolumeCredits);
+        int TotalVolumeCredits(IEnumerable<EnrichedPerformance> performances) => performances.Sum(perf => perf.VolumeCredits);
 
-        int GetTotalAmount(StatementData data) => data.Performances.Sum(perf => perf.Amount);
+        int GetTotalAmount(IEnumerable<EnrichedPerformance> performances) => performances.Sum(perf => perf.Amount);
 
         Play PlayFor(Performance performance)
         {
